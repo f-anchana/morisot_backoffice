@@ -5,14 +5,25 @@ import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 
 const getWeekNumber = (date) => {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const diff = date - firstDayOfYear;
-    return Math.ceil((diff / (1000 * 60 * 60 * 24)) / 7);
+    // Get the day of the year for the provided date
+    const startOfYear = new Date(date.getFullYear(), 0, 0);
+    const diff = date - startOfYear;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+
+    // Calculate the week number based on the day of the year
+    const weekNumber = Math.ceil((dayOfYear + 1) / 7);
+    return weekNumber;
+};
+
+const getMonday = (date) => {
+    const dayOfWeek = date.getDay();
+    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust when day is Sunday
+    return new Date(date.setDate(diff));
 };
 
 const Statistiques = () => {
     const [data, setData] = useState(null);
-    const [currentWeek, setCurrentWeek] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,7 +33,6 @@ const Statistiques = () => {
 
                 const currentDate = new Date();
                 const currentWeekNumber = getWeekNumber(currentDate);
-                setCurrentWeek(currentWeekNumber);
 
                 const reservationsByWeek = {};
                 reservations.forEach(reservation => {
@@ -34,13 +44,20 @@ const Statistiques = () => {
                     reservationsByWeek[week]++;
                 });
 
-                const labels = Object.keys(reservationsByWeek).map(week => {
-                    const startDate = new Date();
-                    startDate.setDate(startDate.getDate() + (parseInt(week) - 1) * 7);
-                    const formattedDate = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear().toString().substr(-2)}`;
-                    return `Semaine du ${formattedDate}`;
+                // Get the dates for the next three Mondays
+                const nextMondays = Array.from({ length: 3 }, (_, index) => {
+                    const monday = new Date();
+                    monday.setDate(monday.getDate() + 7 * (index + 1) - monday.getDay());
+                    return monday;
                 });
-                const data = Object.values(reservationsByWeek);
+
+                const labels = nextMondays.map(monday => {
+                    return `Semaine du ${monday.toLocaleDateString()}`;
+                });
+                const data = labels.map(label => {
+                    const weekNumber = getWeekNumber(new Date(label.split('du')[1].trim()));
+                    return reservationsByWeek[weekNumber] || 0;
+                });
 
                 setData({
                     labels: labels,
@@ -66,7 +83,6 @@ const Statistiques = () => {
             {data ? (
                 <div>
                     <Bar data={data} />
-                    <p>Semaine actuelle : {currentWeek}</p>
                 </div>
             ) : (
                 <p>Chargement des données...</p>

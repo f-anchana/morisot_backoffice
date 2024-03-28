@@ -2,25 +2,32 @@
 
 import React from "react";
 
-export const Supprimer = ({ id }) => {
+export const Supprimer = ({ id, setReservations }) => {
     const API = `https://www.api.ombreetlumiere.eu/controller.php/supprimer_reservation`;
 
     const supprimerReservation = async () => {
         try {
-            const result = await fetch(API, {
+            const deleteResponse = await fetch(API, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id_reservation: id }) // Envoyer l'ID de la réservation dans le corps de la requête
+                body: JSON.stringify({ id_reservation: id })
             });
 
-            if (!result.ok) {
+            if (!deleteResponse.ok) {
                 throw new Error('Erreur lors de la suppression de la réservation.');
             }
 
-            // Recharger la page après la suppression
-            window.location.reload();
+            // Requête GET pour récupérer les réservations mises à jour après la suppression
+            const getResponse = await fetch('https://www.api.ombreetlumiere.eu/controller.php/reservations');
+            if (!getResponse.ok) {
+                throw new Error('Erreur lors de la récupération des réservations après la suppression.');
+            }
+
+            const data = await getResponse.json();
+            // Mettre à jour l'état avec les nouvelles données de réservation
+            setReservations(data);
         } catch (error) {
             console.error('Erreur lors de la requête:', error);
         }
@@ -34,4 +41,3 @@ export const Supprimer = ({ id }) => {
 }
 
 export default Supprimer;
-

@@ -5,12 +5,9 @@ import "./tableau.css";
 import Supprimer from "@/components/supprimer/Supprimer";
 
 export const Tableau = () => {
-  // Déclaration d'un état pour stocker les réservations récupérées de l'API
   const [reservations, setReservations] = useState([]);
 
-  // Effet de chargement pour récupérer les réservations depuis l'API
   useEffect(() => {
-    // Vérifier si le code est exécuté côté client
     if (typeof window !== 'undefined') {
       fetchReservations();
     }
