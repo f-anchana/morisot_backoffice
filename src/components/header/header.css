@@ -1,0 +1,13 @@
+
+.deco{
+    background-color: transparent;
+    border: none;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    padding: 2rem;
+
+}

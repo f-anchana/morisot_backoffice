@@ -1,15 +1,17 @@
 'use client';
 
+import Connexion from "@/components/connexion/Connexion";
+// import { Nav } from "@/components/nav/Nav";
 
-import Header from "./components/header/page";
 
-export default function Home() {
+const Home = () => {
+
   return (
-    <main>
-      <Header /> 
-  <h1>heyyy</h1>
-  <p>franchement on va s'en sortir les gars</p>
-    </main>
-  );
-}
+      <section>
+        < Connexion />
+    </section>
+  )
 
+};
+
+export default Home;
