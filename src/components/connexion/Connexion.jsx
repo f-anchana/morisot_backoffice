@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import './connexion.css';
 
@@ -8,13 +10,8 @@ const Connexion = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-      // Vérification des identifiants
-      if (email !== 'fatimarajananchana@gmail.com' || mdp !== 'admin') {
-        throw new Error('Identifiants incorrects');
-      }
-  
       const response = await fetch('https://www.api.ombreetlumiere.eu/controller.php/connexion', {
         method: 'POST',
         headers: {
@@ -22,18 +19,21 @@ const Connexion = () => {
         },
         body: JSON.stringify({ email, mdp }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Identifiants incorrects');
       }
-  
-      // Redirection vers /tableau si la connexion est réussie
+
+      // Vérification des identifiants après la réception de la réponse de l'API
+      if (email !== 'fatimarajananchana@gmail.com' || mdp !== 'admin') {
+        throw new Error('Identifiants incorrects');
+      }
+
       window.location.href = '/tableau';
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit} className='connexion'>

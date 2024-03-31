@@ -12,7 +12,7 @@ export const SupprimerUtilisateur = ({ id, setUtilisateurs }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id_utilisateur: id })
+                body: JSON.stringify({ id_user: id })
             });
 
             if (!deleteResponse.ok) {

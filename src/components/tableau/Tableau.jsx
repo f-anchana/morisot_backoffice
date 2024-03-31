@@ -13,13 +13,14 @@ export const Tableau = () => {
     }
   }, []);
 
-  // Fonction pour effectuer la requête à l'API et récupérer les réservations
   const fetchReservations = async () => {
     try {
       const response = await fetch('https://www.api.ombreetlumiere.eu/controller.php/reservations');
       const data = await response.json();
-      // Mettre à jour l'état avec les données récupérées
-      setReservations(data);
+      // Tri des réservations par ordre croissant d'ID
+      const sortedReservations = data.sort((a, b) => a.id_resa - b.id_resa);
+      // Mettre à jour l'état avec les données triées
+      setReservations(sortedReservations);
     } catch (error) {
       console.error('Erreur lors de la récupération des réservations :', error);
     }
@@ -51,9 +52,7 @@ export const Tableau = () => {
               <td>{reservation.prix_tota}</td>
               <td>{reservation.nbr_billets}</td>
               <td>{reservation.numero_client}</td>
-              {/* <td> <img src="bin.png" alt="Poubelle" /></td> */}
-              <td><Supprimer id={reservation.id_resa}/></td>
-
+              <td><Supprimer id={reservation.id_resa} setReservations={setReservations} /></td>
             </tr>
           ))}
         </tbody>

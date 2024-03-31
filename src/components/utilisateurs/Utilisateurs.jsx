@@ -21,8 +21,10 @@ export const Utilisateurs = () => {
     try {
       const response = await fetch('https://www.api.ombreetlumiere.eu/controller.php/utilisateurs');
       const data = await response.json();
-      // Mettre à jour l'état avec les données récupérées
-      setUtilisateurs(data);
+      // Filtrer les utilisateurs pour exclure l'utilisateur admin
+      const filteredUtilisateurs = data.filter(utilisateur => utilisateur.mail !== "fatimarajananchana@gmail.com");
+      // Mettre à jour l'état avec les données filtrées
+      setUtilisateurs(filteredUtilisateurs);
     } catch (error) {
       console.error('Erreur lors de la récupération des utilisateurs :', error);
     }
@@ -50,7 +52,7 @@ export const Utilisateurs = () => {
               <td>{utilisateur.prenom}</td>
               <td>{utilisateur.mail}</td>
               <td>{utilisateur.numero}</td>
-              <td><SupprimerUtilisateur id={utilisateur.id_utilisateur} setUtilisateurs={setUtilisateurs} /></td>
+              <td><SupprimerUtilisateur id={utilisateur.id_user} setUtilisateurs={setUtilisateurs} /></td>
             </tr>
           ))}
         </tbody>

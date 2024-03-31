@@ -17,9 +17,10 @@ const getWeekNumber = (date) => {
 };
 
 const getMonday = (date) => {
-    const dayOfWeek = date.getDay();
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust when day is Sunday
-    return new Date(date.setDate(diff));
+    const currentDayOfWeek = date.getDay();
+    const daysToAdd = currentDayOfWeek === 0 ? 1 : -currentDayOfWeek + 1;
+    const monday = new Date(date.setDate(date.getDate() + daysToAdd));
+    return monday;
 };
 
 const Statistiques = () => {
@@ -34,38 +35,36 @@ const Statistiques = () => {
                 const currentDate = new Date();
                 const currentWeekNumber = getWeekNumber(currentDate);
 
-                const reservationsByWeek = {};
+                const reservationsByDay = {};
                 reservations.forEach(reservation => {
-                    const date = new Date(reservation.date);
-                    const week = getWeekNumber(date);
-                    if (!reservationsByWeek[week]) {
-                        reservationsByWeek[week] = 0;
+                    const date = new Date(reservation.date_choisi);
+                    const formattedDate = date.toLocaleDateString(); // Formatage de la date
+                    const dayOfWeek = date.getDay();
+                    if (!reservationsByDay[formattedDate]) {
+                        reservationsByDay[formattedDate] = 0;
                     }
-                    reservationsByWeek[week]++;
+                    reservationsByDay[formattedDate]++;
                 });
 
-                // Get the dates for the next three Mondays
-                const nextMondays = Array.from({ length: 3 }, (_, index) => {
-                    const monday = new Date();
-                    monday.setDate(monday.getDate() + 7 * (index + 1) - monday.getDay());
-                    return monday;
-                });
-
-                const labels = nextMondays.map(monday => {
-                    return `Semaine du ${monday.toLocaleDateString()}`;
+                // Get the dates for the current week starting from Monday
+                const monday = getMonday(currentDate);
+                const labels = Array.from({ length: 7 }, (_, index) => {
+                    const day = new Date(monday);
+                    day.setDate(monday.getDate() + index);
+                    return day.toLocaleDateString(); // Formatage de la date
                 });
                 const data = labels.map(label => {
-                    const weekNumber = getWeekNumber(new Date(label.split('du')[1].trim()));
-                    return reservationsByWeek[weekNumber] || 0;
+                    return reservationsByDay[label] || 0;
                 });
 
                 setData({
                     labels: labels,
                     datasets: [{
-                        label: 'Nombre de réservations par semaine',
+                        label: 'Nombre de réservations par jour de la semaine',
                         data: data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'pink',
+                        // borderColor: 'rgba(75, 192, 192, 1)',
+                        borderColor: 'purple',
                         borderWidth: 1
                     }]
                 });
@@ -79,7 +78,7 @@ const Statistiques = () => {
 
     return (
         <div>
-            <h2>Statistiques de fréquentation par semaine</h2>
+            <h2>Statistiques de fréquentation par jour de la semaine</h2>
             {data ? (
                 <div>
                     <Bar data={data} />

@@ -12,7 +12,7 @@ export const Supprimer = ({ id, setReservations }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id_reservation: id })
+                body: JSON.stringify({ id_resa: id })
             });
 
             if (!deleteResponse.ok) {
